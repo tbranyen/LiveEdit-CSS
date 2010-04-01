@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title><!-- Insert your title here --></title>
+    <script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
+    <link rel="stylesheet" type="text/css" href="test.css"></link>
+    <style> 
+      html { margin:.2em; font-size:2em; color:black; }
+      head, title, style.editable { display:block }
+      style.editable { border: 1px solid darkgray; min-height: 500px; background-color: white; width: auto; }
+    </style>
+    <script type="text/javascript">
+        jQuery(function ready() {
+            jQuery("link").each(function() {
+                var href = this.href;
+                jQuery.ajax({
+                    url: href,
+                    success: function(data) {
+                        jQuery("<style contentEditable=''/>")
+                            .html(data)
+                            .addClass("editable")
+                            .appendTo("body")
+                           // .wrapInner("<pre/>")
+                            /*.keyup(function() {
+                                var $this = $(this);
+                                $this.unwrap("pre");
+                                $this.wrapInner("<pre/>");
+                               // $this.focus();
+                            })*/;
+                    }
+                })
+            });
+        });
+    </script>
+</head>
+<body>
+    <!-- Insert your content here -->
+    <h1>Test</h1>
+</body>
+</html>
