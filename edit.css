@@ -1,0 +1,134 @@
+* html,* html body {
+    background-image: url(about:blank);
+    background-attachment:fixed;
+    
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
+#livedit-wrapper div, #livedit-wrapper span, #livedit-wrapper applet, #livedit-wrapper object, #livedit-wrapper iframe,
+#livedit-wrapper h1, #livedit-wrapper h2, #livedit-wrapper h3, #livedit-wrapper h4, #livedit-wrapper h5, #livedit-wrapper h6, #livedit-wrapper p, #livedit-wrapper blockquote, #livedit-wrapper pre,
+#livedit-wrapper a, #livedit-wrapper abbr, #livedit-wrapper acronym, #livedit-wrapper address, #livedit-wrapper big, #livedit-wrapper cite, #livedit-wrapper code,
+#livedit-wrapper del, #livedit-wrapper dfn, #livedit-wrapper em, #livedit-wrapper font, #livedit-wrapper img, #livedit-wrapper ins, #livedit-wrapper kbd, #livedit-wrapper q, #livedit-wrapper s, #livedit-wrapper samp,
+#livedit-wrapper small, #livedit-wrapper strike, #livedit-wrapper strong, #livedit-wrapper sub, #livedit-wrapper sup, #livedit-wrapper tt, #livedit-wrapper var,
+#livedit-wrapper b, #livedit-wrapper u, #livedit-wrapper i, #livedit-wrapper center,
+#livedit-wrapper dl, #livedit-wrapper dt, #livedit-wrapper dd, #livedit-wrapper ol, #livedit-wrapper ul, #livedit-wrapper li,
+#livedit-wrapper fieldset, #livedit-wrapper form, #livedit-wrapper label, #livedit-wrapper legend,
+#livedit-wrapper table, #livedit-wrapper caption, #livedit-wrapper tbody, #livedit-wrapper tfoot, #livedit-wrapper thead, #livedit-wrapper tr, #livedit-wrapper th, #livedit-wrapper td {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    font-size: 100%;
+    vertical-align: baseline;
+    background: transparent;
+    width: auto;
+    height: auto;
+    text-align: left;
+}
+
+#livedit-wrapper {
+    width: 100%;
+    height: 240px;
+    position: fixed;
+    *position: absolute;
+    bottom: 0;
+    left: 0;
+    padding: 0px;
+    margin: 0px;
+    
+    background-color: #F7F3E1;
+    z-index: 100000;
+    
+    font-family: Helvetica, Arial, sans-serif;
+}
+    #livedit-wrapper #livedit-resize {
+        height: 3px;
+        background-color: #4F4F4F;
+        cursor: row-resize;
+        font-size: 0;
+    }
+    #livedit-wrapper #livedit-navigation {
+        height: 32px;
+        background-color: #E0E0E0;  
+        
+        border-bottom: 2px solid #CCC;
+        font-weight: bold;
+        margin: 0;
+        padding: 0;
+        
+        font-size: 12px;
+    }
+        #livedit-wrapper #livedit-inspect {
+            margin-left: 22px;
+            margin-right: 17px;
+            text-transform: uppercase;
+            text-decoration: none;
+            color: #4F4F4F;
+        }
+        
+        #livedit-wrapper #livedit-tabs {
+            list-style-type: none;
+            display: inline;
+            line-height: 42px;
+            *line-height: 32px;
+            padding-left: 0px;
+        }
+            #livedit-wrapper #livedit-tabs li {
+                list-style: none;
+                display: inline;
+                margin-right: 5px;
+                padding: 5px 10px 5px 10px;
+                
+                *position: relative;
+                *bottom: -5px;
+            }
+        #livedit-wrapper #livedit-tabs li.active {
+            list-style: none;
+            display: inline;
+            margin-right: 5px;
+            padding: 5px 10px 5px 10px;
+            background-color: #CCC;
+            
+            border-top: 2px solid #C0C0C0;
+            border-left: 2px solid #C0C0C0;
+            border-right: 2px solid #C0C0C0;
+            -moz-border-radius: 4px 4px 0px 0px;
+            
+            cursor: pointer;
+        }
+        #livedit-wrapper #livedit-tabs li.active {
+            background-color: #F7F3E1;
+        }
+        #livedit-wrapper #livedit-tabs li.hover {
+            color: #DDDDDD;
+        }
+        #livedit-wrapper #livedit-tabs li.active > a {
+            color: #4F4F4F;
+        }
+        #livedit-wrapper #livedit-tabs li > a {
+            text-decoration: none;
+            color: #969696;
+        }
+        
+    #livedit-wrapper #livedit-content {
+        padding: 10px;
+    }
+    #livedit-wrapper #livedit-content div.tab-content {
+        display: none;
+    }
+    #livedit-wrapper #livedit-content div.tab-content.active {
+        display: block;
+        height: 65%;
+    }
+    #livedit-wrapper #livedit-content div.tab-content select.styles-dropdown {
+        width: 100%;
+    }
+    #livedit-wrapper #livedit-content div.tab-content textarea.styles-editable {
+        width: 100%;
+        height: 145px;
+        margin-top: 5px;
+        display: block;
+    }
