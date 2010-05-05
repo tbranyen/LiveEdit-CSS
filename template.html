@@ -4,9 +4,10 @@
     <div id="livedit-navigation">
         <a id="livedit-inspect" href="#">Inspect</a>
         <ul id="livedit-tabs">
-            <li class="active"><a href="#">Inline Styles</a></li>
+            <li class="active"><a href="#">DOM</a></li>
             <li><a href="#">Document Level</a></li>
             <li><a href="#">External Stylesheets</a></li>
+            <li><a href="#">Script Console</a></li>
         </ul>
     </div>
     <div id="livedit-content">
@@ -20,6 +21,11 @@
         <div id="livedit-external" class="tab-content">
             <select id="livedit-external-styles" class="styles-dropdown"></select>
             <textarea id="livedit-external-editable" class="styles-editable"></textarea>
+        </div>
+        <div id="livedit-console" class="tab-content">
+            <textarea id="livedit-console-editable" class="scripts-editable"></textarea>
+            <input type="button" value="Run Script" class="livedit-console-button" />
+            <input type="button" value="Clear" class="livedit-console-button" />
         </div>
     </div>
 </div>

@@ -1,11 +1,5 @@
 * html,* html body {
-    background-image: url(about:blank);
-    background-attachment:fixed;
-    
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
+
 }
 
 #livedit-wrapper div, #livedit-wrapper span, #livedit-wrapper applet, #livedit-wrapper object, #livedit-wrapper iframe,

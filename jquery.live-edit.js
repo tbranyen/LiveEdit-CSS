@@ -1,9 +1,10 @@
-(function($, window, document, undefined) {
+;~function($, window, document, undefined) {
     // Need comments here!
-    $.liveEdit = function liveEdit(_prefix) {
-        // Constants
+    $.liveEdit = function liveEdit(_prefix, _window) {
+        // Configuration
         var config = {
-            "prefix": _prefix
+            "prefix": _prefix,
+            "window": _window
         };
         // Utilities
         var util = {
@@ -17,9 +18,8 @@
                     // Return jQuery set
                     return _elements.each(function() {
                         // Test for Trident
-                        if(this.styleSheet) {
+                        if(this.styleSheet)
                             this.styleSheet.cssText = _value;
-                        }
                         // Use either innerText (Webkit) or innerHTML (Gecko)
                         else
                             this.innerHTML = this.innerText = _value;
@@ -39,14 +39,20 @@
                     else
                         return style.innerHTML || style.innerText;
                 }
+            },
+            // Come up with code to traverse DOM
+            "getHTMLTree": function(node, obj) {
+                //if(obj === {})
+            },
+            "uuid": function() {
+                return "s_"+Math.floor(Math.random()*+new Date());
             }
         };
         // Events
         var evt = {
             // Handle preinit start
             "preinit": function() {
-                $("body").append('<div id="livedit-wrapper"><div id="livedit-resize"></div><div id="livedit-navigation"><a id="livedit-inspect" href="#">Inspect</a><ul id="livedit-tabs"><li class="active"><a href="#">DOM</a></li><li><a href="#">Document Level</a></li><li><a href="#">External Stylesheets</a></li></ul></div><div id="livedit-content"><div id="livedit-inline" class="tab-content active">Not implemented yet...</div><div id="livedit-document" class="tab-content"><select id="livedit-document-styles" class="styles-dropdown"></select><textarea id="livedit-document-editable" class="styles-editable"></textarea></div><div id="livedit-external" class="tab-content"><select id="livedit-external-styles" class="styles-dropdown"></select><textarea id="livedit-external-editable" class="styles-editable"></textarea></div></div></div>');
-                
+                $("body").append('<div id="livedit-wrapper"><div id="livedit-resize"></div><div id="livedit-navigation"><a id="livedit-inspect" href="#">Inspect</a><ul id="livedit-tabs"><li class="active"><a href="#">DOM</a></li><li><a href="#">Document Level</a></li><li><a href="#">External Stylesheets</a></li><li><a href="#">Script Console</a></li></ul></div><div id="livedit-content"><div id="livedit-inline" class="tab-content active">Not implemented yet...</div><div id="livedit-document" class="tab-content"><select id="livedit-document-styles" class="styles-dropdown"></select><textarea id="livedit-document-editable" class="styles-editable"></textarea></div><div id="livedit-external" class="tab-content"><select id="livedit-external-styles" class="styles-dropdown"></select><textarea id="livedit-external-editable" class="styles-editable"></textarea></div><div id="livedit-console" class="tab-content"><textarea id="livedit-console-editable" class="scripts-editable"></textarea><input type="button" value="Run Script" class="livedit-console-button" /><input type="button" value="Clear" class="livedit-console-button" /></div></div></div>');
                 // Hover tabs
                 var $tabs = jQuery("li", "#livedit-tabs").hover(function() {
                     var $this = $(this);
@@ -56,19 +62,21 @@
                     $(this).removeClass("hover");
                 })
                     // Click tabs
-                    .click(function(evt) {
-                        evt.preventDefault();
+                    .click(function(event) {
+                        event.preventDefault();
+                        event.stopImmediatePropagation();
                         var $this = $(this);
-                        jQuery("li.active", "#livedit-tabs").removeClass("active");
+                        $("li.active", "#livedit-tabs").removeClass("active");
                         $this.addClass("active")
                             .removeClass("hover");
                         
                        // Display tab content
                        $("div", "#livedit-content").removeClass("active").eq($this.index()).addClass("active");
+                       return false;
                     });
                     
                 // Mousedown for resizing
-                $("#livedit-resize").bind("mousedown", function(evt) {
+                $("#livedit-resize").bind("mousedown", function(event) {
                     var $wrapper = $("#livedit-wrapper");
                     $wrapper.data("drag", true);
                     $wrapper.data("position", {
@@ -76,31 +84,29 @@
                         "y": evt.clientY
                     });
                     
-                    evt.preventDefault();
+                    event.preventDefault();
                 });
                 
-                $(document).bind("mouseup", function(evt) {
+                $(document).bind("mouseup", function() {
                     $("#livedit-wrapper").removeData("drag");
                 });
                 
-                $(document).bind("mousemove", function(evt) {
+                $(document).bind("mousemove", function(event) {
                     var $wrapper = $("#livedit-wrapper");
                     if($wrapper.data("drag") === true) {
                         var width = $wrapper.width(),
                             height = $wrapper.height(),
                             lastY = $wrapper.data("position").y,
-                            currentY = evt.clientY;
+                            currentY = event.clientY;
                             
                         // Move down
                         if(currentY > lastY) {
                             height = height - (currentY - lastY);
-                            //console.log("Down ", height);
                             $wrapper.data("position").y = currentY;
                         }
                         // Move up
                         else {
                             height = height + (lastY - currentY);
-                            //console.log("Up ", height);
                             $wrapper.data("position").y = currentY;
                         }
                         
@@ -108,39 +114,64 @@
                         
                         $("#livedit-content div.tab-content textarea.styles-editable").css("height", (height-95)+"px");
                     }
+                    
+                    // TODO: Make the controls slightly transparent as you mouse away
                 });  
             },
             // Handle the initial start
             "init": function() {
+                // Override window object - yeah i'm that ballsy
+                window = config.window;
+                
                 // Before init really happens, execute preinit events
                 evt.preinit();
                 // Load styles if they exist
                 if($("style").length)
                     core.load("styles");
+                else
+                    $("#livedit-wrapper #livedit-tabs li:contains('Document Level')").unbind("click").bind("click", evt.stop);
                 // Load links if they exist
                 if($("link").length)
                     core.load("links");
+                else
+                    $("#livedit-wrapper #livedit-tabs li:contains('External Stylesheets')").unbind("click").bind("click", evt.stop);
+                
+                $("#livedit-external-editable, #livedit-document-editable")
+                    // First clear the timeout
+                    .bind("keyup keydown focus blur", evt.clearStyleTimeout)
+                    // Only update style on keyup
+                    .bind("keyup", evt.updateStyle);
                     
+                
                 $("head").append("<link rel='stylesheet' type='text/css' href='" + config.prefix + "edit.css' />");
             },
+            
+            // Update style section
+            "updateStyleTimeout": undefined,
+            "clearStyleTimeout": function() {
+                window.clearTimeout(evt.updateStyleTimeout);
+            },
             // Update the styles
-            "updateStyle": function(evt) {
-                var $this = jQuery(this),
-                    $selectable = $($this.data("selectable")),
-                    $styleTag = $($selectable.find(":selected").data("uuid"))
-                        .data("contents", $this.val());
-                        
-                util.stylesheet($styleTag, $this.val());
-                evt.preventDefault();
-                evt.stopPropagation();
-                return false;
+            "updateStyle": function() {
+                var that = this;
+                evt.updateStyleTimeout = window.setTimeout(function() {
+                    var $this = jQuery(that),
+                        $selectable = $($this.data("selectable")),
+                        $styleTag = $($selectable.find(":selected").data("uuid"))
+                            .data("contents", $this.val());
+                     
+                    util.stylesheet($styleTag, $this.val());
+                    return false;
+                }, 500);
             },
             // Handle link url changes
-            "listChange": function(evt) {
+            "listChange": function() {
                 var $this = $(this),
                     $style = $($this.val());
 
-                $($this.data("editable")).val(util.stylesheet($style));
+                // Need to update the UUID associated with the styles
+                $($this.data("editable")).val(util.stylesheet($style))
+                    .data("uuid", this.value);
             },
             // Handle success
             "linkLoad": function(data) {
@@ -149,64 +180,90 @@
                     // Pull reference of link from ajax object
                     $link = this.link,
                     // Generate a unique id for the id
-                    uuid = "s_"+Math.floor(Math.random()*+new Date()),
+                    uuid = util.uuid();
                     // Create the textarea shit
                     $editable = $("#livedit-external-editable").val(data)
                         .addClass("editable")
-                        .data("selectable", "#livedit-external-styles")
-                        .bind("keyup", evt.updateStyle);
+                        .data("selectable", "#livedit-external-styles"),
+                        // Reference to dropdown
+                        $stylesheets = $("#livedit-external-styles");
 
-                // Set the dropdown values
-                var $stylesheets = $("#livedit-external-styles");
                 $("<option value='#" + uuid + "'>" + unescape(href) + "</option>").appendTo($stylesheets)
                     .data("uuid", "#"+uuid);
-                
-                $stylesheets.children("option").removeAttr("selected").last().attr("selected", "true");
-                   
+
+                try {
+                    $stylesheets.children("option").removeAttr("selected").last().attr("selected", "true");
+                    //$stylesheets.children("option").removeAttr("selected");
+                }
+                catch(ex) {
+                    //window.alert(ex.name);
+                }
+
                 var $styleTag = $("<style type='text/css'/>").attr("id", uuid)
-                    .data("contents", data);
+                    .data({
+                        "contents": data,
+                        "original": $link[0]
+                    });
+
                 
                 util.stylesheet($styleTag, data);
                 $link.replaceWith($styleTag);
-
+                
+                // Currently setting this on every stylesheet, change
+                // so that there is a load complete event and trigger
+                // this code in there...
                 $("#livedit-external-styles")
                     .data("editable", "#livedit-external-editable")
                     .bind("change", evt.listChange);
+            },
+            // Utility event to stop propgation, defaults, etc...
+            "stop": function(event) {
+                event.stopPropgation();
+                event.preventDefault();
+                
+                return false;
             }
         };
         // Core functionality
         var core = {
+            // Handles the loading in of style tags and link tags
             "load": function(type) {
                 switch(type) {
                     case "styles":
                          $("style").each(function() {
                             var parent = this.parentNode.nodeName,
                                 $this = $(this),
-                                $stylesheets = $("#livedit-document-styles");
+                                $stylesheets = $("#livedit-document-styles"),
+                                // Generate a unique id for the id
+                                uuid = util.uuid(),
+                                    // Create the textarea shit
+                                    $editable = $("#livedit-document-editable").val(this.innerHTML)
+                                        .addClass("editable")
+                                        .data("selectable", "#livedit-document-styles");
+                                    
+                            $("<option value='#" + uuid + "'>" + unescape(location.href) + ": " + parent + " > STYLE" + "</option>").appendTo($stylesheets)
+                                .data("uuid", "#"+uuid);
 
-                            $stylesheets.append("<option value='#" + uuid + "'>" + unescape(location.href) + ": " + parent + " > STYLE" + "</option>");
+                            try {
+                                $stylesheets.children("option").removeAttr("selected").last().attr("selected", "true");
+                            }
+                            catch(ex) {
+                                //window.alert(ex.name);
+                            }
 
-                            // Generate a unique id for the id
-                            var uuid = "s_"+Math.floor(Math.random()*+new Date()),
-                                // Create the textarea shit
-                                $editable = $("#livedit-document-editable").val(this.innerHTML)
-                                    .addClass("editable")
-                                    .data("uuid", "#"+uuid)
-                                    .bind("keyup", evt.updateStyle);
-
-                            var styles = util.stylesheet($this);
                             $this.attr("id", uuid);
-                            util.stylesheet($this, styles);
 
-                            $("#livedit-document-styles").data("editable", "#livedit-document-editable").bind("change", evt.listChange);
+                            $("#livedit-document-styles")
+                                .data("editable", "#livedit-document-editable")
+                                .bind("change", evt.listChange);
                         });
                     break;
                     case "links":
-                        jQuery("link[rel=stylesheet]").each(function() {
-                            var $link = jQuery(this),
+                        $("link[rel=stylesheet]").each(function() {
+                            var $link = $(this),
                                 href = this.href;
                                 
-                            jQuery.ajax({
+                            $.ajax({
                                 "link": $link,
                                 "url": href,
                                 "success": evt.linkLoad
@@ -248,6 +305,9 @@
             //}
     
     
-})(jQuery, window, document);
+}(jQuery, window, document);
 
-jQuery.liveEdit("http://www.tabdeveloper.com/jquery/LiveEdit/").init();
+$(function() {
+    //jQuery.liveEdit("http://www.tabdeveloper.com/jquery/LiveEdit/").init();
+    jQuery.liveEdit("http://localhost/", window).init();
+});
