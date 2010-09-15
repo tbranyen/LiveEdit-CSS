@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title><!-- Insert your title here --></title>
+    <link rel="stylesheet" type="text/css" href="edit.css"/>
+    <script type="text/javascript" src="prettyprint.js"></script>
+    <script type="text/javascript">
+    window.onload = function() {
+        var debug = function(val) {
+            var element = prettyPrint(val);
+            document.body.appendChild(element);
+        };
+        var ss = document.styleSheets[0];
+        // Number of stylesheets
+        debug(document.styleSheets.length);
+        // Owner node
+        debug(ss.ownerNode);
+        // Css rules list
+        //debug(ss);
+        console.log(ss);
+        if(ss) {
+            debug(ss.rules(0));
+        }
+        else {
+            debug(ss.rules(0));
+        }
+        
+    }
+    </script>
+</head>
+<body>
+    <!-- Insert your content here -->
+</body>
+</html>
