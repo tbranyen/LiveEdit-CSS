@@ -89,9 +89,12 @@
             border-top: 2px solid #C0C0C0;
             border-left: 2px solid #C0C0C0;
             border-right: 2px solid #C0C0C0;
-            -moz-border-radius: 4px 4px 0px 0px;
+            border-radius: 4px 4px 0px 0px;
             
             cursor: pointer;
+
+            position: relative;
+            bottom: -1px;
         }
         #livedit-wrapper #livedit-tabs li.active {
             background-color: #F7F3E1;
